@@ -1,3 +1,7 @@
+// This code is distributed under MIT license. 
+// Copyright (c) 2015 George Mamaladze
+// See license.txt or http://opensource.org/licenses/mit-license.php
+
 using System.ComponentModel;
 using System.Configuration.Install;
 using System.ServiceProcess;
@@ -17,7 +21,7 @@ namespace srvcon
 
             var service = new ServiceInstaller
             {
-                ServiceName = Program.InstallServiceName
+                ServiceName = InstallHelper.InstallServiceName
             };
 
             Installers.Add(process);

@@ -36,6 +36,7 @@
       <HintPath>..\packages\CommandLineParser.1.9.71\lib\net40\CommandLine.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Configuration.Install" />
     <Reference Include="System.Core" />
     <Reference Include="System.ServiceProcess" />
@@ -46,12 +47,18 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CommandNames.cs" />
+    <Compile Include="ConsoleOptions.cs" />
     <Compile Include="CustomServiceInstaller.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="InstallHelper.cs" />
+    <Compile Include="InstallOptions.cs" />
+    <Compile Include="Options.cs" />
     <Compile Include="Program.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="UninstallOptions.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />
