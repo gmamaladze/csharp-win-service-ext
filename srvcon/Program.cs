@@ -27,13 +27,13 @@ namespace srvcon
 
         }
 
-        [VerbOption("install", HelpText = "Record changes to the repository.")]
+        [VerbOption(CommandNames.Install, HelpText = "Install the service.")]
         public InstallOptions Install { get; set; }
 
-        [VerbOption("uninstall", HelpText = "Update remote refs along with associated objects.")]
-        public UninstallOption Uninstall { get; set; }
+        [VerbOption(CommandNames.Uninstall, HelpText = "Uninstall the service.")]
+        public UninstallOptions Uninstall { get; set; }
 
-        [VerbOption("console", HelpText = "Update remote refs along with associated objects.")]
+        [VerbOption(CommandNames.Console, HelpText = "Start service as a console application.")]
         public ConsoleOptions Console { get; set; }
     }
 
@@ -41,21 +41,48 @@ namespace srvcon
     {
     }
 
-    internal class UninstallOption
+    internal class UninstallOptions
     {
+        [Option('f', "force")]
+        public bool Force { get; set; }
     }
 
     internal class InstallOptions
     {
+        [Option('u', "user")]
+        public string User { get; set; }
+
+        [Option('p', "password")]
+        public string Password { get; set; }
+
+    }
+
+    internal class Settings
+    {
+        private static Settings _instance;
+
+        public static Settings Instance()
+        {
+            return _instance ?? (_instance = new Settings());
+        }
+
+        public int ? Port { get; set; }
+        public bool ? ConsoleMode { get; set; }
+
+        public Settings Override(Settings other)
+        {
+            return new Settings()
+            {
+                Port = other.Port ?? Port,
+                ConsoleMode = other.ConsoleMode ?? ConsoleMode,
+            };
+        }
     }
 
 
     internal class Program : ServiceBase
     {
         public static string InstallServiceName = "srvcon";
-
-
-
 
         private static void Main(string[] args)
         {
@@ -67,37 +94,8 @@ namespace srvcon
             {
                 Environment.Exit(Parser.DefaultExitCodeFail);
             }
-            else
-            {
-            }
 
             bool debugMode = false;
-            if (args.Length > 0)
-            {
-                for (int ii = 0; ii < args.Length; ii++)
-                {
-                    switch (args[ii].ToUpper())
-                    {
-                        case "/NAME":
-                            if (args.Length > ii + 1)
-                            {
-                                InstallServiceName = args[++ii];
-                            }
-                            break;
-                        case "/I":
-                            InstallService();
-                            return;
-                        case "/U":
-                            UninstallService();
-                            return;
-                        case "/D":
-                            debugMode = true;
-                            break;
-                        default:
-                            break;
-                    }
-                }
-            }
 
             if (debugMode)
             {
@@ -117,14 +115,43 @@ namespace srvcon
         {
             switch (command)
             {
-                
+                case CommandNames.Install:
+                    Install((InstallOptions)options);
+                    break;
+
+                case CommandNames.Uninstall:
+                    Uninstall((UninstallOptions)options);
+                    break;
+
+                case CommandNames.Console:
+                    RunConsole((ConsoleOptions)options);
+                    break;
+            }
+        }
+
+        private static void RunConsole(ConsoleOptions options)
+        {
+            throw new NotImplementedException();
+        }
+
+        private static void Uninstall(UninstallOptions options)
+        {
+            ManagedInstallerClass.InstallHelper(new[] {"/u", Assembly.GetExecutingAssembly().Location});
+        }
+
+        private static void Install(InstallOptions options)
+        {
+            if (IsServiceInstalled())
+            {
+                Uninstall(new UninstallOptions {Force = true});
             }
 
+            ManagedInstallerClass.InstallHelper(new[] {Assembly.GetExecutingAssembly().Location});
         }
 
         protected override void OnStart(string[] args)
         {
-            //start any threads or http listeners etc
+            
         }
 
         protected override void OnStop()
@@ -137,21 +164,6 @@ namespace srvcon
             return ServiceController
                 .GetServices()
                 .Any(s => s.ServiceName == InstallServiceName);
-        }
-
-        private static void InstallService()
-        {
-            if (IsServiceInstalled())
-            {
-                UninstallService();
-            }
-
-            ManagedInstallerClass.InstallHelper(new[] {Assembly.GetExecutingAssembly().Location});
-        }
-
-        private static void UninstallService()
-        {
-            ManagedInstallerClass.InstallHelper(new[] {"/u", Assembly.GetExecutingAssembly().Location});
         }
     }
 }
