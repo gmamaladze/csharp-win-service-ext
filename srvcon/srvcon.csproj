@@ -48,6 +48,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CommandNames.cs" />
+    <Compile Include="ConsoleCtrlCEvent.cs" />
     <Compile Include="ConsoleOptions.cs" />
     <Compile Include="CustomServiceInstaller.cs">
       <SubType>Component</SubType>

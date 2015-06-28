@@ -2,9 +2,11 @@
 // Copyright (c) 2015 George Mamaladze
 // See license.txt or http://opensource.org/licenses/mit-license.php
 
+using System;
 using System.Configuration.Install;
 using System.Linq;
 using System.Reflection;
+using System.Security;
 using System.ServiceProcess;
 
 namespace srvcon
@@ -15,7 +17,21 @@ namespace srvcon
 
         public static void Uninstall(UninstallOptions options)
         {
-            ManagedInstallerClass.InstallHelper(new[] {"/u", Assembly.GetExecutingAssembly().Location});
+            try
+            {
+                ManagedInstallerClass.InstallHelper(new[] {"/u", Assembly.GetExecutingAssembly().Location});
+            }
+            catch (InstallException ex)
+            {
+                if (ex.InnerException is SecurityException)
+                {
+                    SayNotEnaughRights();
+                }
+                else
+                {
+                    throw;
+                }
+            }
         }
 
         public static void Install(InstallOptions options)
@@ -25,7 +41,21 @@ namespace srvcon
                 Uninstall(new UninstallOptions {Force = true});
             }
 
-            ManagedInstallerClass.InstallHelper(new[] {Assembly.GetExecutingAssembly().Location});
+            try
+            {
+                ManagedInstallerClass.InstallHelper(new[] {Assembly.GetExecutingAssembly().Location});
+            }
+            catch (InvalidOperationException ex)
+            {
+                if (ex.InnerException is SecurityException)
+                {
+                    SayNotEnaughRights();
+                }
+                else
+                {
+                    throw;
+                }
+            }
         }
 
         private static bool IsServiceInstalled()
@@ -33,6 +63,12 @@ namespace srvcon
             return ServiceController
                 .GetServices()
                 .Any(s => s.ServiceName == InstallServiceName);
+        }
+
+        private static void SayNotEnaughRights()
+        {
+            Console.Error.WriteLine(
+                "Not enaugh rights to install/uninstall service. Use Run as to start a program in the context of an administrator account.");
         }
     }
 }

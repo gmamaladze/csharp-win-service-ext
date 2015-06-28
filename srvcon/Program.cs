@@ -4,13 +4,17 @@
 
 using System;
 using System.ServiceProcess;
+using System.Threading;
+using System.Threading.Tasks;
 using CommandLine;
 
 namespace srvcon
 {
     internal class Program : ServiceBase
     {
+        public const string RunningMutexName = "srvcon.running";
         private static bool _consoleMode;
+        private static Mutex _runningMutex;
 
         private static void Main(string[] args)
         {
@@ -48,21 +52,28 @@ namespace srvcon
             }
         }
 
-        private static void RunConsole()
-        {
-            Program service = new Program();
-            service.OnStart(null);
-            Console.WriteLine("Service Started...");
-            Console.WriteLine("<press any key to exit...>");
-            Console.Read();
-        }
-
         protected override void OnStart(string[] args)
         {
+            _runningMutex = new Mutex(true, RunningMutexName);
+            Console.WriteLine("Service started.");
         }
 
         protected override void OnStop()
         {
+            _runningMutex.ReleaseMutex();
+            Console.WriteLine("Service stopped.");
+        }
+
+        private static void RunConsole()
+        {
+            var service = new Program();
+            service.OnStart(null);
+
+            var serviceStopped = Mutex.OpenExisting(Program.RunningMutexName);
+            var userCanceled = new ConsoleCtrlCEvent();
+            WaitHandle.WaitAny(new WaitHandle[] { userCanceled, serviceStopped });
+
+            service.OnStop();
         }
     }
 }
