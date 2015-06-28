@@ -5,7 +5,6 @@
 using System;
 using System.ServiceProcess;
 using System.Threading;
-using System.Threading.Tasks;
 using CommandLine;
 
 namespace srvcon
@@ -22,13 +21,14 @@ namespace srvcon
             var isOk = Parser.Default.ParseArguments(args, options, Execute);
             if (!isOk) Environment.Exit(Parser.DefaultExitCodeFail);
 
+            var service = new Program();
             if (_consoleMode)
             {
-                RunConsole();
+                RunConsole(service);
             }
             else
             {
-                Run(new Program());
+                Run(service);
             }
         }
 
@@ -38,12 +38,10 @@ namespace srvcon
             {
                 case CommandNames.Install:
                     InstallHelper.Install((InstallOptions) options);
-                    Environment.Exit(0);
                     return;
 
                 case CommandNames.Uninstall:
                     InstallHelper.Uninstall((UninstallOptions) options);
-                    Environment.Exit(0);
                     return;
 
                 case CommandNames.Console:
@@ -64,14 +62,13 @@ namespace srvcon
             Console.WriteLine("Service stopped.");
         }
 
-        private static void RunConsole()
+        private static void RunConsole(Program service)
         {
-            var service = new Program();
             service.OnStart(null);
 
-            var serviceStopped = Mutex.OpenExisting(Program.RunningMutexName);
+            var serviceStopped = Mutex.OpenExisting(RunningMutexName);
             var userCanceled = new ConsoleCtrlCEvent();
-            WaitHandle.WaitAny(new WaitHandle[] { userCanceled, serviceStopped });
+            WaitHandle.WaitAny(new WaitHandle[] {userCanceled, serviceStopped});
 
             service.OnStop();
         }

@@ -32,6 +32,7 @@ namespace srvcon
                     throw;
                 }
             }
+            Environment.Exit(0);
         }
 
         public static void Install(InstallOptions options)
@@ -56,6 +57,7 @@ namespace srvcon
                     throw;
                 }
             }
+            Environment.Exit(0);
         }
 
         private static bool IsServiceInstalled()
