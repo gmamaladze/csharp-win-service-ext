@@ -3,28 +3,21 @@
 // See license.txt or http://opensource.org/licenses/mit-license.php
 
 using System;
-using System.Runtime.CompilerServices;
 using System.ServiceProcess;
 using System.Threading;
 using System.Threading.Tasks;
 using CommandLine;
 using Ninject;
-using Ninject.Extensions.Logging.Log4net;
-using log4net;
-using log4net.Appender;
-using log4net.Config;
-using log4net.Core;
-using log4net.Layout;
-using ILogger = Ninject.Extensions.Logging.ILogger;
+using Ninject.Extensions.Logging;
 
 namespace srvcon
 {
     internal class Program : ServiceBase
     {
-        private readonly ILogger _log;
         public const string RunningMutexName = "srvcon.running";
         private static bool _consoleMode;
         private static Mutex _runningMutex;
+        private readonly ILogger _log;
 
         public Program(ILogger logger)
         {
