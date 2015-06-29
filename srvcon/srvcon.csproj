@@ -35,6 +35,18 @@
     <Reference Include="CommandLine">
       <HintPath>..\packages\CommandLineParser.1.9.71\lib\net40\CommandLine.dll</HintPath>
     </Reference>
+    <Reference Include="log4net">
+      <HintPath>..\packages\log4net.2.0.3\lib\net40-full\log4net.dll</HintPath>
+    </Reference>
+    <Reference Include="Ninject">
+      <HintPath>..\packages\Ninject.3.2.2.0\lib\net40\Ninject.dll</HintPath>
+    </Reference>
+    <Reference Include="Ninject.Extensions.Logging">
+      <HintPath>..\packages\Ninject.Extensions.Logging.3.2.0.0\lib\net40\Ninject.Extensions.Logging.dll</HintPath>
+    </Reference>
+    <Reference Include="Ninject.Extensions.Logging.Log4Net">
+      <HintPath>..\packages\Ninject.Extensions.Logging.Log4net.3.2.2.0\lib\net40\Ninject.Extensions.Logging.Log4Net.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Configuration.Install" />
@@ -55,6 +67,7 @@
     </Compile>
     <Compile Include="InstallHelper.cs" />
     <Compile Include="InstallOptions.cs" />
+    <Compile Include="Logger.cs" />
     <Compile Include="Options.cs" />
     <Compile Include="Program.cs">
       <SubType>Component</SubType>
@@ -65,6 +78,7 @@
     <Folder Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

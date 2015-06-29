@@ -5,19 +5,21 @@
 using System;
 using System.Security.AccessControl;
 using System.Threading;
+using Ninject.Extensions.Logging;
 
 namespace srvcon
 {
     internal class ConsoleCtrlCEvent : EventWaitHandle
     {
-        public ConsoleCtrlCEvent()
-            : base(true, EventResetMode.AutoReset)
+        public ConsoleCtrlCEvent(ILogger log)
+            : base(false, EventResetMode.ManualReset)
         {
             Console.WriteLine("Press Ctrl+C to exit...");
             Console.CancelKeyPress += (sender, args) =>
             {
+                log.Info("Exit requested by user.");
                 args.Cancel = true;
-                Reset();
+                Set();
             };
         }
 
