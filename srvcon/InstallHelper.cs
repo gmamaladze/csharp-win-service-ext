@@ -48,6 +48,9 @@ namespace srvcon
             }
             catch (InvalidOperationException ex)
             {
+                //TODO
+                //Logger.Error(ex.Message);
+                //Logger.Debug(ex.ToString());
                 if (ex.InnerException is SecurityException)
                 {
                     SayNotEnaughRights();
