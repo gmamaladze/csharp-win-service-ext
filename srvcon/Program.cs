@@ -9,6 +9,8 @@ using System.Threading.Tasks;
 using CommandLine;
 using Ninject;
 using Ninject.Extensions.Logging;
+using Ninject.Extensions.Logging.Log4net;
+using Ninject.Modules;
 
 namespace srvcon
 {
@@ -18,6 +20,7 @@ namespace srvcon
         private static bool _consoleMode;
         private static Mutex _runningMutex;
         private readonly ILogger _log;
+        private static StandardKernel _kernel;
 
         public Program(ILogger logger)
         {
@@ -38,10 +41,14 @@ namespace srvcon
 
             Logger.Init();
 
-            var kernel = new StandardKernel();
-            kernel.Bind<Program>().ToSelf();
+            //NOTE if you do not want implicit log extension initialization use this code
+            //var setting = new NinjectSettings {LoadExtensions = false};
+            //var module = new Log4NetModule();
+            _kernel = new StandardKernel();
 
-            var service = kernel.Get<Program>();
+            _kernel.Bind<Program>().ToSelf();
+
+            var service = _kernel.Get<Program>();
             if (_consoleMode)
             {
                 RunConsole(service);
@@ -57,6 +64,7 @@ namespace srvcon
             switch (command)
             {
                 case CommandNames.Install:
+
                     InstallHelper.Install((InstallOptions) options);
                     return;
 

@@ -42,7 +42,6 @@ namespace srvcon
                 MaxSizeRollBackups = 5,
                 DatePattern = "yy.MM.dd.hh.mm.ss",
                 Layout = GetPattermLayout(),
-                Name = "QTracImportHelper",
                 ImmediateFlush = true,
                 File = Path.Combine(
                     Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),

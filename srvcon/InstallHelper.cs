@@ -8,15 +8,40 @@ using System.Linq;
 using System.Reflection;
 using System.Security;
 using System.ServiceProcess;
+using Ninject.Extensions.Logging;
 
 namespace srvcon
 {
     internal class InstallHelper
     {
+        private readonly ILogger _log;
+
+        public InstallHelper(ILogger log)
+        {
+            _log = log;
+        }
+
         public static string InstallServiceName = "srvcon";
 
         public static void Uninstall(UninstallOptions options)
         {
+            if (!IsServiceInstalled())
+            {
+                //log.Error("Service can not be uninstalled. Service is not installed.");
+                Environment.Exit(1);
+            }
+
+            if (!options.Force)
+            {
+                Console.WriteLine("Doy you really want to uninstall. Press key (y/n)");
+                var key = Console.ReadKey();
+                if (key.KeyChar != 'y')
+                {
+                    //log.Info("Operation canceled by user.");
+                    Environment.Exit(1);
+                }
+            }
+
             try
             {
                 ManagedInstallerClass.InstallHelper(new[] {"/u", Assembly.GetExecutingAssembly().Location});
@@ -39,7 +64,8 @@ namespace srvcon
         {
             if (IsServiceInstalled())
             {
-                Uninstall(new UninstallOptions {Force = true});
+                //log.Warining("Service is already installed");
+                Environment.Exit(0);
             }
 
             try
